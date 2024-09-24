@@ -1,0 +1,28 @@
+#cloud-config
+users:
+  - default
+  - name: berkay
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    ssh_authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQChnC5n6vxrKDuGrZXnh8Tc/109ph9/3H1PLuz63i0zmG+ElgBBDYXIwOfQuKJsksAXoOviMaZ4sZ0wLbIEpKTAzXZJhyETx/H4yVy5qhFe3CyObm7ApFmnZgRZVoTTQgQNPi6HykUmRmWzGArP1NyekiJweiE54anENO2Kn96Fp51a1tKqmSmE8bv/D5UW/tsVI0U4CjVxCSNXAGblabuLdSFC9K95RL02j+Jgby9fVuQfqTRSK2nAzBHgL8NOqI4QhjCdnze9jlZu+bMrQbp4sUuPRXrOcPwwd7Ppn9L0EH4BBXAx8jE3YDlUGARatTyc3zxXQhykhT8nvEFv60GmzzLvH+jYLIt03HuwjiZiw4Se9AZEU3u8QK0EEEXK/6+GroOGIACz4e0ZMt8tVDA/+OF1allpVSX2CnvaPBrgRB/Kq+JSfIfcxd5tujT3SdALAb9wOYkZLTldKFdiOsFVq7h9TzRq51KuBg1PGsJQUhKU4CR8MFzXcL25ylKH1ds= berka@DESKTOP-USTGVGB
+
+# Upgrade system
+package_update: true
+#package_upgrade: true
+
+# Install needed packages
+packages:
+  - npm
+  - nginx
+
+#Make all commands which do not require sudo not to use sudo 
+runcmd:
+  - su - berkay -c "git clone https://gitlab.com/bbwrl/m346-ref-card-02.git"
+  - cd m364-ref-card-02.git
+  - npm install
+  - npm update
+  - npx browserslist@latest --update -db
+  - npm audit fix --force
+  - npm start
+
