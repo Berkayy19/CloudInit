@@ -17,10 +17,10 @@ runcmd:
   - wget https://dlcdn.apache.org/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz -O /tmp/apache-maven-3.9.9-bin.tar.gz 
   - tar xvf /tmp/apache-maven-3.9.9-bin.tar.gz -C /opt 
   - git clone https://gitlab.com/bbwrl/m346-ref-card-03.git 
-  - mysql -h db-jokesapp.cuzcrct8tvj7.us-east-1.rds.amazonaws.com -u admin -p12345678 -e "DROP DATABASE IF EXISTS jokedb; CREATE DATABASE jokedb; CREATE USER 'jokedbuser' IDENTIFIED BY '123456'; GRANT ALL PRIVILEGES ON jokedb.* TO 'jokedbuser'; FLUSH PRIVILEGES;" # Change DB-Servers endpoint
+  - mysql -h db-jokesapp.cuzcrct8tvj7.us-east-1.rds.amazonaws.com -u admin -p12345678 -e "DROP DATABASE IF EXISTS jokedb; CREATE DATABASE jokedb; CREATE USER 'jokedbuser' IDENTIFIED BY '123456'; GRANT ALL PRIVILEGES ON jokedb.* TO 'jokedbuser'; FLUSH PRIVILEGES;" 
   - sed -i 's|http://localhost:3000|*|g' m346-ref-card-03/src/main/java/ch/bbw/architecturerefcard03/controller/JokeRestController.java 
   - echo "" > m346-ref-card-03/src/main/resources/application.properties 
-  - echo "spring.datasource.url=jdbc:mariadb://db-jokesapp.cuzcrct8tvj7.us-east-1.rds.amazonaws.com/jokedb" >> m346-ref-card-03/src/main/resources/application.properties # Change DB-Servers endpoint IMPORTANT!!! add a /jokedb to your endpoint + Change Path if user is not "renggli"
+  - echo "spring.datasource.url=jdbc:mariadb://db-jokesapp.cuzcrct8tvj7.us-east-1.rds.amazonaws.com/jokedb" >> m346-ref-card-03/src/main/resources/application.properties 
   - echo "spring.datasource.username=jokedbuser" >> m346-ref-card-03/src/main/resources/application.properties 
   - echo "spring.datasource.password=123456" >> m346-ref-card-03/src/main/resources/application.properties 
   - echo "spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect" >> m346-ref-card-03/src/main/resources/application.properties 
