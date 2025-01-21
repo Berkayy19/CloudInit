@@ -1,0 +1,35 @@
+#cloud-config
+users:
+  - default
+  - name: berkay
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    ssh_authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCwgAJD3OpAZyPB5zroPUmLpwiKdhsLH37snX8qyQGh8ykn4+4mGHhC1X5h23h0Cco29UAHNyYgleXjU5jP+khqXDWdG2J6wGYgFG/0oMAsucY7iqjmI1Gki2f5K33z7BTPGV7Qi/b/oKdMob7VwZXmSKMqGSWiOnNzaq9Ssx5Daf2HeIBApnXQwfCkjLyl+l6Svphzkt3nKavJa5yhZ+Fo1UAe0oDhlvwNg33kLkt5JJf7UxJB/pZwEEbDib8G8WT6ULlUNkRUd8Cs0DQpTM4PxhXvM54KHmB62+Lmp0yr83yVL4Owr/QTbF1rULfOKk0XYouK1jIPpLjRyXUe/oyp5Zel9D0BKQrKUbVToT79t88CXO6tdDvvfUtwjBIr1L7jCDpWgB6iFWfjtBSvY92U4SUEfYc4zQdY3alfWwTOmZ7n11wYuMIcOg/9GyViSVSuUjPZ5kiUhIjKuwpAVKRTTKCjDk2fEzfj2DB6BecuW79R9AwcALsGjvmM6MFfns8= berka@DESKTOP-22047L6
+
+package_update: true
+
+packages:
+  - mysql-client
+
+runcmd:
+  - apt-get install -y openjdk-11-jdk
+  - wget https://dlcdn.apache.org/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz -O /tmp/apache-maven-3.9.9-bin.tar.gz 
+  - tar xvf /tmp/apache-maven-3.9.9-bin.tar.gz -C /opt 
+  - git clone https://gitlab.com/bbwrl/m346-ref-card-03.git 
+  - mysql -h db-jokesapp.cuzcrct8tvj7.us-east-1.rds.amazonaws.com -u admin -p12345678 -e "DROP DATABASE IF EXISTS jokedb; CREATE DATABASE jokedb; CREATE USER 'jokedbuser' IDENTIFIED BY '123456'; GRANT ALL PRIVILEGES ON jokedb.* TO 'jokedbuser'; FLUSH PRIVILEGES;" # Change DB-Servers endpoint
+  - sed -i 's|http://localhost:3000|*|g' m346-ref-card-03/src/main/java/ch/bbw/architecturerefcard03/controller/JokeRestController.java 
+  - echo "" > m346-ref-card-03/src/main/resources/application.properties 
+  - echo "spring.datasource.url=jdbc:mariadb://db-jokesapp.cuzcrct8tvj7.us-east-1.rds.amazonaws.com/jokedb" >> m346-ref-card-03/src/main/resources/application.properties # Change DB-Servers endpoint IMPORTANT!!! add a /jokedb to your endpoint + Change Path if user is not "renggli"
+  - echo "spring.datasource.username=jokedbuser" >> m346-ref-card-03/src/main/resources/application.properties 
+  - echo "spring.datasource.password=123456" >> m346-ref-card-03/src/main/resources/application.properties 
+  - echo "spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect" >> m346-ref-card-03/src/main/resources/application.properties 
+  - echo "spring.datasource.driver-class-name=org.mariadb.jdbc.Driver" >> m346-ref-card-03/src/main/resources/application.properties 
+  - echo "# Datenbankinitialisierung" >> m346-ref-card-03/src/main/resources/application.properties 
+  - echo "spring.sql.init.mode=always" >> m346-ref-card-03/src/main/resources/application.properties 
+  - bash -c "pushd m346-ref-card-03/ && /opt/apache-maven-3.9.9/bin/mvn package; popd" 
+  - mkdir -p /opt/m346-ref-card-03
+  - cp m346-ref-card-03/target/architecture-refcard-03-0.0.1-SNAPSHOT.jar /opt/m346-ref-card-03/
+  - chown root:berkay /opt/m346-ref-card-03
+  - chmod -R 755 /opt/m346-ref-card-03
+  - java -DDB_USERNAME="jokedbuser" -DDB_PASSWORD="123456" -jar /opt/m346-ref-card-03/architecture-refcard-03-0.0.1-SNAPSHOT.jar >> /var/log/m346-ref-card-03-log.log
