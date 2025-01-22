@@ -4,7 +4,7 @@
 DB_CREDENTIALS=(
     "-u jokedbuser"
     "-p123456"
-    "-h db-jokesapp.cogrb9epzmxy.us-east-1.rds.amazonaws.com"
+    "-h db-jokesapp.cuzcrct8tvj7.us-east-1.rds.amazonaws.com"
 )
 DB_NAME="jokedb"
 BACKUP_DIR="/mnt/backup"
